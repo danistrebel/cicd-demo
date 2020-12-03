@@ -50,12 +50,13 @@ limitations under the License.
 		<project.root.dir>${basedir}</project.root.dir>
 		<target.root.dir>${basedir}/target</target.root.dir>
 		<deployment.suffix></deployment.suffix>
-		<apigee.hosturl>${env.APIGEE_HOSTURL}</apigee.hosturl>
+		<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
 		<apigee.apiversion>v1</apigee.apiversion>
-		<apigee.org>${env.APIGEE_ORG}</apigee.org>
-		<apigee.username>${env.APIGEE_USER}</apigee.username>
-		<apigee.password>${env.APIGEE_PASS}</apigee.password>
-		<apigee.authtype>oauth</apigee.authtype>
+		<apigee.options>override</apigee.options>
+		<apigee.org>${org}</apigee.org>
+		<apigee.bearer>${bearer}</apigee.bearer> <!-- this takes precedence over service account file -->
+		<apigee.serviceaccount.file>${file}</apigee.serviceaccount.file>
+		<deployment.description>n/a</deployment.description>
 	</properties>
 
 	<!-- This is where you add the environment specific properties under various profile names -->
@@ -65,14 +66,12 @@ limitations under the License.
 			<id>test</id>
 			<properties>
 				<apigee.env>test</apigee.env>
-				<apigee.options>update</apigee.options>
 			</properties>
 		</profile>
 		<profile>
 			<id>prod</id>
 			<properties>
 				<apigee.env>prod</apigee.env>
-				<apigee.options>override</apigee.options>
 				<apigee.override.delay>5</apigee.override.delay>
 			</properties>
 		</profile>
@@ -84,7 +83,7 @@ limitations under the License.
 				<plugin>
 					<groupId>io.apigee.build-tools.enterprise4g</groupId>
 					<artifactId>apigee-edge-maven-plugin</artifactId>
-					<version>1.1.7</version>
+					<version>2.0.4</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -151,7 +150,7 @@ limitations under the License.
 						</replacement>
 						<replacement>
 							<token>@description</token>
-							<value>Commit: ${commit}, Branch: ${branch}, Author: ${author}</value>
+							<value>${deployment.description}</value>
 						</replacement>
 					</replacements>
 				</configuration>
@@ -160,7 +159,7 @@ limitations under the License.
 			<plugin>
 				<groupId>io.apigee.build-tools.enterprise4g</groupId>
 				<artifactId>apigee-edge-maven-plugin</artifactId>
-				<version>1.1.7</version>
+				<version>2.0.4</version>
 				<executions>
 					<execution>
 						<id>configure-bundle-step</id>

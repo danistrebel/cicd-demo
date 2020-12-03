@@ -1,0 +1,38 @@
+steps:
+- name: node
+  entrypoint: npm
+  args:
+    - 'install'
+- name: node
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - 'npm run lint'
+- name: node
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - 'npm run unit-test'
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - "gcloud auth application-default print-access-token > /workspace/token"
+- name: 'gcr.io/cloud-builders/mvn'
+  entrypoint: 'bash'
+  args:
+    - "-c"
+    - "mvn clean install -Ptest -Dbearer=$(cat /workspace/token)
+    -Dorg=$PROJECT_ID -Ddeployment.description=\"CloudRun Build: $BUILD_ID\""
+- name: node
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - 'npm run integration-test'
+  env:
+    - "TEST_HOST=$_INT_TEST_HOST"
+    - "TEST_BASE_PATH=$_INT_TEST_BASE_PATH"
+
+substitutions:
+    _INT_TEST_HOST: org-env.apigee.net
+    _INT_TEST_BASE_PATH: /airports-cicd/v1

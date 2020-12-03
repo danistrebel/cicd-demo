@@ -1,6 +1,6 @@
 # Airports CI/CD V1 Proxy
 
-This contains an example proxy for the CI/CD pipeline reference using Jenkins
+This contains an example proxy for the CI/CD pipeline reference using Cloud Build
 and Maven.
 
 ## Development
@@ -15,4 +15,17 @@ and Maven.
 
 ``` sh
 TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/airports-cicd-feature-ABC/v1' npm run integration-test
+```
+
+## Run Cloud Build Deployment
+
+Requires the Cloud Build API to be enabled and a Service Account with the
+following roles:
+  * Apigee API Creator
+  * Apigee Deployer
+
+Run the following command to trigger a cloud build manually:
+
+```sh
+gcloud builds submit --config=cloudbuild.yaml --substitutions=_INT_TEST_HOST=api.my-host.example.com,_INT_TEST_BASE_PATH=/airports-cicd/v1
 ```
