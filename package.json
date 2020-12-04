@@ -13,10 +13,10 @@
   "scripts": {
     "test": "npm run unit-test && npm run integration-test",
     "unit-test": "nyc  --reporter=html --reporter=text mocha --recursive \"./test/unit/*.js\"",
-    "integration-test": "cucumber-js --format summary:./report.e2e.html ./test/integration",
+    "integration-test": "cucumber-js ./test/integration | tee report.e2e.html",
     "lint": "npm run eslint && npm run apigeelint",
-    "eslint": "eslint -c ./.eslintrc-jsc.yml --format html . > report.eslint.html",
-    "apigeelint": "./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js > report.apigeelint.html"
+    "eslint": "eslint -c ./.eslintrc-jsc.yml --format html | tee report.eslint.html",
+    "apigeelint": "./node_modules/apigeelint/cli.js -s ./apiproxy -f html.js -e PO025,PO013 | tee report.apigeelint.html"
   },
   "devDependencies": {
     "apickli": "^2.3.3",

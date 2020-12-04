@@ -44,5 +44,31 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 Run the following command to trigger a cloud build manually:
 
 ```sh
-gcloud builds submit --config=cloudbuild.yaml --substitutions=_INT_TEST_HOST=api.my-host.example.com,_INT_TEST_BASE_PATH=/airports-cicd/v1
+gcloud builds submit --config=cloudbuild-hybrid.yaml --substitutions=_INT_TEST_HOST=api.my-host.example.com,_INT_TEST_BASE_PATH=/airports-cicd/v1
+```
+
+### Apigee SaaS
+
+Requires the Cloud Build API to be enabled and a Service Account with the
+following role:
+  * Secret Manager Secret Accessor
+
+```sh
+gcloud services enable secretmanager.googleapis.com
+PROJECT_ID=$(gcloud config get-value project)
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+CLOUD_BUILD_SA="$PROJECT_NUMBER@cloudbuild.gserviceaccount.com"
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$CLOUD_BUILD_SA" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
+To pass the Apigee user and password securely into the Cloud Build pipeline you
+have to add these two secrets to the cloud secret manager:
+  * `apigee_cicd_user` that holds the user to use for the CI/CD account
+  * `apigee_cicd_password` that holds the password for the CI/CD account
+
+```sh
+gcloud builds submit --config=cloudbuild-saas.yaml --substitutions=_INT_TEST_HOST=strebel-eval-test.apigee.net,_INT_TEST_BASE_PATH=/airports-cicd-nightly/v1,_DEPLOYMENT_ORG=my-org
 ```

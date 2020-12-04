@@ -17,13 +17,20 @@ steps:
   entrypoint: "bash"
   args:
     - "-c"
-    - "gcloud auth application-default print-access-token > /workspace/token"
+    - "gcloud secrets versions access latest --secret=apigee_cicd_password --format='get(payload.data)' | tr '_-' '/+' | base64 -d > apigeepass.txt"
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - "gcloud secrets versions access latest --secret=apigee_cicd_user --format='get(payload.data)' | tr '_-' '/+' | base64 -d > apigeeuser.txt"
 - name: 'gcr.io/cloud-builders/mvn'
   entrypoint: 'bash'
   args:
     - "-c"
-    - "mvn -f ./pom-hybrid.xml clean install -Ptest -Dbearer=$(cat
-    /workspace/token) -Dorg=$PROJECT_ID -Ddeployment.description=\"CloudRun Build: $BUILD_ID\""
+    - "mvn -f ./pom-saas.xml clean install -Ptest -Dpassword=$(cat
+    apigeepass.txt) -Dusername=$(cat
+    apigeeuser.txt) -Denv=$_DEPLOYMENT_ENV -Dorg=$_DEPLOYMENT_ORG -Ddeployment.description=\"CloudRun
+    Build: $BUILD_ID\""
 - name: node
   entrypoint: "bash"
   args:
@@ -41,6 +48,8 @@ steps:
     - 'gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID/coverage'
 
 substitutions:
+    _DEPLOYMENT_ORG: org
+    _DEPLOYMENT_ENV: test
     _INT_TEST_HOST: org-env.apigee.net
     _INT_TEST_BASE_PATH: /airports-cicd/v1
 

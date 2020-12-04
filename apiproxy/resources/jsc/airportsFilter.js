@@ -16,14 +16,14 @@
 
 const allAirports = JSON.parse(context.getVariable("response.content"));
 
-let countryParam = context.getVariable("request.queryparam.country");
+var countryParam = context.getVariable("request.queryparam.country");
 if (countryParam) {
   countryParam = countryParam.toLowerCase();
 }
 
 const limitParam = context.getVariable("request.queryparam.limit");
 
-let filtered = allAirports;
+var filtered = allAirports;
 
 if (countryParam && countryParam.length > 0) {
   filtered = filtered.filter(
