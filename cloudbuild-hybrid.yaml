@@ -22,8 +22,11 @@ steps:
   entrypoint: 'bash'
   args:
     - "-c"
-    - "mvn clean install -Ptest -Dbearer=$(cat /workspace/token)
-    -Dorg=$PROJECT_ID -Ddeployment.description=\"CloudRun Build: $BUILD_ID\""
+    - "mvn -f ./pom-hybrid.xml clean install"
+    - "-Ptest"
+    - "-Dbearer=$(cat /workspace/token)"
+    - "-Dorg=$PROJECT_ID"
+    - "-Ddeployment.description=\"CloudRun Build: $BUILD_ID\""
 - name: node
   entrypoint: "bash"
   args:
@@ -36,3 +39,10 @@ steps:
 substitutions:
     _INT_TEST_HOST: org-env.apigee.net
     _INT_TEST_BASE_PATH: /airports-cicd/v1
+
+artifacts:
+  objects:
+    location: "gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID"
+    paths:
+      - "./report.*.html"
+      - "./coverage"

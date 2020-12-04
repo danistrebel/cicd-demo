@@ -19,10 +19,27 @@ TEST_HOST=$APIGEE_ORG-$APIGEE_ENV.apigee.net TEST_BASE_PATH='/airports-cicd-feat
 
 ## Run Cloud Build Deployment
 
+### Apigee hybrid
+
 Requires the Cloud Build API to be enabled and a Service Account with the
 following roles:
   * Apigee API Creator
   * Apigee Deployer
+
+```sh
+gcloud services enable cloudbuild.googleapis.com
+PROJECT_ID=$(gcloud config get-value project)
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+CLOUD_BUILD_SA="$PROJECT_NUMBER@cloudbuild.gserviceaccount.com"
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$CLOUD_BUILD_SA" \
+  --role="roles/apigee.deployer"
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$CLOUD_BUILD_SA" \
+  --role="roles/apigee.apiCreator"
+```
 
 Run the following command to trigger a cloud build manually:
 

@@ -65,13 +65,13 @@ limitations under the License.
 		<profile>
 			<id>test</id>
 			<properties>
-				<apigee.env>test</apigee.env>
+				<apigee.env>test1</apigee.env>
 			</properties>
 		</profile>
 		<profile>
 			<id>prod</id>
 			<properties>
-				<apigee.env>prod</apigee.env>
+				<apigee.env>prod1</apigee.env>
 				<apigee.override.delay>5</apigee.override.delay>
 			</properties>
 		</profile>
